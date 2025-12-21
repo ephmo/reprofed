@@ -1,7 +1,11 @@
-profile:
+metadata:
   name: gnome
-  description: Fedora GNOME Workstation profile
-  version: "0.1.0"
+  description: Fedora GNOME profile
+  version: "0.9.0"
+  maintainer: ephmo
+  last_updated: "2025-12-22"
+
+requires:
   distro: fedora
   distro_versions:
     - "42"
@@ -35,45 +39,11 @@ packages:
       - shim-x64
       - xfsprogs
       - yq
-      # GNOME Desktop Environment
+
+      # Desktop
       - gnome-desktop
       - workstation-product
 
-    fedora_42:
-      # Fedora 42 specific native packages
-      []
-
-    fedora_43:
-      # Fedora 43 specific native packages
-      []
-
-    flatpak:
-      flathub:
-        # Flatpak applications from Flathub
-        []
-
-  exclude:
-    all_versions:
-      # Packages to remove across all Fedora versions
-      []
-
-    fedora_42:
-      # Fedora 42 specific exclusions
-      []
-
-    fedora_43:
-      # Fedora 43 specific exclusions
-      []
-
 services:
   enable:
-    # Services enabled by default
     - gdm
-
-  disable:
-    # Services disabled but not masked
-    []
-
-  mask:
-    # Services fully masked
-    []
