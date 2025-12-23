@@ -41,23 +41,24 @@ packages:
       - yq
 
       # Desktop
-      - admin-tools
-      - base-graphical
-      - container-management
-      - desktop-accessibility
-      - dial-up
-      - firefox
-      - fonts
-      - gnome-desktop
-      - guest-desktop-agents
-      - hardware-support
-      - input-methods
-      - libreoffice
-      - multimedia
-      - networkmanager-submodules
-      - printing
-      - standard
-      - workstation-product
+      - "@admin-tools"
+      - "@base-graphical"
+      - "@container-management"
+      - "@desktop-accessibility"
+      - "@dial-up"
+      - "@firefox"
+      - "@fonts"
+      - "@gnome-desktop"
+      - "@guest-desktop-agents"
+      - "@hardware-support"
+      - "@input-methods"
+      - "@libreoffice"
+      - "@multimedia"
+      - "@networkmanager-submodules"
+      - "@printing"
+      - "@standard"
+      - "@workstation-product"
+      - flatpak
 
   exclude:
     all_versions:
