@@ -6,7 +6,20 @@ APP_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 
 source "$APP_DIR"/src/core/constants.sh
 source "$APP_DIR"/src/core/check_root.sh
-source "$APP_DIR"/src/core/check_distro.sh
+source "$APP_DIR"/src/core/check_distro_id.sh
+
+if ! check_distro_id; then
+  echo "Unsupported distribution: $DISTRO_ID"
+  exit 1
+fi
+
+source "$APP_DIR"/src/core/check_distro_version.sh
+
+if ! check_distro_version; then
+  echo "Fedora version ${DISTRO_VERSION_ID:-unknown} is not supported."
+  echo "Supported versions: ${SUPPORTED_VERSIONS[*]}"
+  exit 1
+fi
 
 func_install() {
   if ! command -v yq >/dev/null 2>&1; then
@@ -14,12 +27,11 @@ func_install() {
   fi
 
   install -d -m 755 "$APP_PATH"
-  install -d -m 755 "$APP_PATH"/{bin,config,core,profiles,templates}
+  install -d -m 755 "$APP_PATH"/{bin,config,core,profiles}
 
   install -m 755 "$APP_DIR"/src/bin/*.sh "$APP_PATH"/bin/
   install -m 755 "$APP_DIR"/src/core/*.sh "$APP_PATH"/core/
   install -m 644 "$APP_DIR"/src/profiles/* "$APP_PATH"/profiles/
-  install -m 644 "$APP_DIR"/src/templates/* "$APP_PATH"/templates/
   install -m 644 -T "$APP_DIR"/src/VERSION "$APP_PATH"/VERSION
 
   if [ ! -f "$APP_PATH"/config/config.yaml ]; then
