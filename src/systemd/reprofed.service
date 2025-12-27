@@ -9,9 +9,6 @@ RefuseManualStop=yes
 [Service]
 Type=oneshot
 
-# Skip execution if no internet, but continue boot
-ExecStartPre=-/usr/bin/curl -s --head --connect-timeout 5 https://www.google.com
-
 # Apply profile (may take hours)
 ExecStart=/opt/reprofed/bin/reprofed-apply.sh
 
