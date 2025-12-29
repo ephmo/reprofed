@@ -23,7 +23,7 @@ fi
 
 func_install() {
   if ! command -v yq > /dev/null 2>&1; then
-    $DNF install -y yq
+    dnf5 install -y yq
   fi
 
   install -d -m 755 "$APP_PATH"
