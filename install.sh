@@ -1,23 +1,21 @@
 #!/usr/bin/env bash
 set -euo pipefail
-shopt -s nullglob
+shopt -s globstar nullglob
 
-APP_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+script_path="$(readlink -f "${BASH_SOURCE[0]}")"
+script_dir="$(dirname "$script_path")"
 
-source "$APP_DIR"/src/core/constants.sh
-source "$APP_DIR"/src/core/check_root.sh
-source "$APP_DIR"/src/core/check_distro_id.sh
-
-if ! check_distro_id; then
-  echo "Unsupported distribution: $DISTRO_ID"
+if [ "$EUID" -ne 0 ]; then
+  echo "❌ This script must be run as root or with sudo."
   exit 1
 fi
 
-source "$APP_DIR"/src/core/check_distro_version.sh
+source /etc/os-release
 
-if ! check_distro_version; then
-  echo "Fedora version ${DISTRO_VERSION_ID:-unknown} is not supported."
-  echo "Supported versions: ${SUPPORTED_VERSIONS[*]}"
+distro_id="$ID"
+
+if [[ "$distro_id" != "fedora" ]]; then
+  echo "❌ Unsupported distribution: $distro_id"
   exit 1
 fi
 
@@ -26,33 +24,19 @@ func_install() {
     dnf5 install -y yq
   fi
 
-  install -d -m 755 "$APP_PATH"
-  install -d -m 755 "$APP_PATH"/{bin,config,core,profiles}
+  install -d -m 755 /opt/reprofed
+  install -d -m 755 /opt/reprofed/profiles
 
-  install -m 755 "$APP_DIR"/src/bin/*.sh "$APP_PATH"/bin/
-  install -m 755 "$APP_DIR"/src/core/*.sh "$APP_PATH"/core/
-  install -m 644 "$APP_DIR"/src/profiles/* "$APP_PATH"/profiles/
-  install -m 644 -T "$APP_DIR"/src/VERSION "$APP_PATH"/VERSION
+  install -m 644 "$script_dir"/src/profiles/* /opt/reprofed/profiles/
+  install -m 755 -T "$script_dir"/src/reprofed.sh /opt/reprofed/reprofed.sh
+  install -m 644 -T "$script_dir"/src/VERSION /opt/reprofed/VERSION
 
-  if [ ! -f "$APP_PATH"/config/config.yaml ]; then
-    install -m 644 -T "$APP_DIR"/src/config/config.yaml "$APP_PATH"/config/config.yaml
-  fi
-
-  install -m 644 -T "$APP_DIR"/src/systemd/reprofed.service /etc/systemd/system/reprofed.service
-
-  ln -sf "$APP_PATH"/bin/reprofed-cli.sh /usr/bin/reprofed
-
-  systemctl daemon-reload
-  systemctl enable --force --quiet reprofed.service
+  ln -sf /opt/reprofed/reprofed.sh /usr/bin/reprofed
 }
 
 func_remove() {
-  systemctl disable --force --quiet --now reprofed.service 2> /dev/null
-  rm -f /etc/systemd/system/reprofed.service
-  systemctl daemon-reload
   rm -f /usr/bin/reprofed
-  rm -rf "$APP_PATH"/
-  rm -f /var/log/"$APP_NAME".log
+  rm -rf /opt/reprofed/
 }
 
 func_help() {
@@ -73,14 +57,14 @@ EOF
   cat << EOF
 
 Examples:
-  $APP_NAME -i
-  $APP_NAME --update
-  $APP_NAME --remove
+  reprofed -i
+  reprofed --update
+  reprofed --remove
 EOF
 }
 
 func_error_args() {
-  echo "Error: Invalid argument." >&2
+  echo "❌ Invalid argument." >&2
   exit 1
 }
 
@@ -104,3 +88,5 @@ func_main() {
 }
 
 func_main "$@"
+
+echo "✅ Installation completed successfully."
