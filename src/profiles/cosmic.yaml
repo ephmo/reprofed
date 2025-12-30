@@ -3,8 +3,8 @@ metadata:
   description: Fedora COSMIC Desktop profile
   version: "1.0.0"
   maintainer: ephmo
-  release_date: "2025-12-29"
-  last_modified: "2025-12-29"
+  release_date: "2025-12-30"
+  last_modified: "2025-12-30"
 
 requires:
   distro: fedora
@@ -14,7 +14,6 @@ requires:
   arch: x86_64
 
 repos:
-  flathub: true
   rpmfusion-free: true
   rpmfusion-nonfree: true
   vscode: true
@@ -22,26 +21,6 @@ repos:
 packages:
   install:
     all_versions:
-      # Minimal system
-      - "@core"
-      - authselect
-      - btrfs-progs
-      - chrony
-      - cryptsetup
-      - dosfstools
-      - efibootmgr
-      - grub2-efi-x64
-      - grub2-pc
-      - grub2-tools-extra
-      - grubby
-      - kernel
-      - langpacks-en
-      - lvm2
-      - shim-x64
-      - xfsprogs
-      - yq
-
-      # Desktop
       - "@admin-tools"
       - "@base-graphical"
       - "@container-management"
@@ -60,10 +39,6 @@ packages:
       - "@printing"
       - "@standard"
       - flatpak
-
-  exclude:
-    all_versions:
-      - cosmic-store
 
 services:
   set-default:
