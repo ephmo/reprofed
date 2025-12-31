@@ -2,31 +2,6 @@
 set -euo pipefail
 shopt -s globstar nullglob
 
-if [ "$EUID" -ne 0 ]; then
-  echo "ERROR: This script must be run as root or with sudo."
-  exit 1
-fi
-
-source /etc/os-release
-
-distro_id="$ID"
-distro_version_id="$VERSION_ID"
-
-if [[ "$distro_id" != "fedora" ]]; then
-  echo "ERROR: Unsupported distribution: $distro_id"
-  exit 1
-fi
-
-if [[ "$TERM" != "linux" ]]; then
-    echo "ERROR: This script must be run from a Linux virtual console (TTY)."
-    echo
-    echo "You are currently running in a graphical terminal."
-    echo "Switch to a TTY using Ctrl+Alt+F3 (or F2–F6), then run the script again."
-    exit 1
-fi
-
-systemctl isolate multi-user.target
-
 func_profile_list() {
   for yaml_file in /opt/reprofed/profiles/*.yaml; do
     [ -e "$yaml_file" ] || continue
@@ -35,6 +10,31 @@ func_profile_list() {
 }
 
 func_profile_apply() {
+  if [ "$EUID" -ne 0 ]; then
+    echo "ERROR: This command requires root privileges."
+    exit 1
+  fi
+
+  source /etc/os-release
+
+  distro_id="$ID"
+  distro_version_id="$VERSION_ID"
+
+  if [[ "$distro_id" != "fedora" ]]; then
+    echo "ERROR: Unsupported distribution: $distro_id"
+    exit 1
+  fi
+
+  if [[ "$TERM" != "linux" ]]; then
+    echo "ERROR: This script must be run from a Linux virtual console (TTY)."
+    echo
+    echo "You are currently running in a graphical terminal."
+    echo "Switch to a TTY using Ctrl+Alt+F3 (or F2–F6), then run the script again."
+    exit 1
+  fi
+
+  systemctl isolate multi-user.target
+
   if [ -f /opt/reprofed/profiles/"$1".yaml ]; then
     profile_file="/opt/reprofed/profiles/${1}.yaml"
 
