@@ -26,10 +26,9 @@ func_profile_apply() {
   fi
 
   if [[ "$TERM" != "linux" ]]; then
-    echo "ERROR: This script must be run from a Linux virtual console (TTY)."
+    echo "ERROR: This command must be run from a Linux virtual console (TTY)."
     echo
-    echo "You are currently running in a graphical terminal."
-    echo "Switch to a TTY using Ctrl+Alt+F3 (or F2–F6), then run the script again."
+    echo "Use Ctrl+Alt+F3 (or F2–F6) to switch to a TTY and try again."
     exit 1
   fi
 
