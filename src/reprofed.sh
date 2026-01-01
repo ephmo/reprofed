@@ -37,9 +37,15 @@ func_profile_apply() {
   if [ -f /opt/reprofed/profiles/"$1".yaml ]; then
     profile_file="/opt/reprofed/profiles/${1}.yaml"
 
+    if ! DISTRO_ID="$distro_id" \
+      yq -e '.requires.distro == strenv(DISTRO_ID)' "$profile_file" > /dev/null 2>&1; then
+      echo "ERROR: This profile does not support Fedora Linux."
+      exit 1
+    fi
+
     if ! DISTRO_VERSION_ID="$distro_version_id" \
       yq -e '.requires.distro_versions[] == strenv(DISTRO_VERSION_ID)' "$profile_file" > /dev/null 2>&1; then
-      echo "ERROR: Fedora version is not supported."
+      echo "ERROR: This profile does not support this version of Fedora Linux."
       exit 1
     fi
 
@@ -47,7 +53,7 @@ func_profile_apply() {
 
     if ! DISTRO_ARCH="$distro_arch" \
       yq -e '.requires.arch == strenv(DISTRO_ARCH)' "$profile_file" > /dev/null 2>&1; then
-      echo "ERROR: Fedora architecture is not supported."
+      echo "ERROR: This profile does not support this architecture."
       exit 1
     fi
 
